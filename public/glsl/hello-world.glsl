@@ -20,6 +20,7 @@ uniform Ball mouseBall;
 
 const float threshold = 0.0004;
 const float goo = 20.0;
+Ball errorBall = Ball(vec2(-100.0), -1.0, vec2(0.0), vec4(-1.), -1.0);
 
 vec2 ratio = resolution.xy / resolution.x;
 
@@ -30,9 +31,8 @@ bool inCircle(vec2 p, Ball b) {
   return false;
 }
 
-bool inField(vec2 p, Ball ball1) {
-  Ball ball2;
-  bool inField = false;
+void inField(vec2 p, Ball ball1, out Ball ball2) {
+  
   for(int i = 0; i < 5; i++) {
     if(i == 4) {
       ball2 = mouseBall;
@@ -49,13 +49,10 @@ bool inField(vec2 p, Ball ball1) {
     float div1 = pow(sqrt(dx1 + dy1), goo);
     float div2 = pow(sqrt(dx2 + dy2), goo);
     if((ball1.size / div1) + (ball2.size / div2) > threshold) {
-      inField = true;
-      break;
+      return;
     }
   }
-  
-  return inField;
-  
+  ball2 = errorBall;
 }
 
 void main() {
@@ -64,13 +61,17 @@ void main() {
   vec2 p = gl_FragCoord.xy/resolution.xy * ratio;
 
   Ball ball;
-  Ball ball2;
   
-  for(int i = 0; i < 4; i++) {
+  vec4 outColor = vec4(1., 1., 1.,1.);
+  for(int i = 0; i <= 4; i++) {
     ball = balls[i];
-    if(inField(p, ball)) {
-      col = vec4(0.2, 0.2, 0.2, 1.0);
+    Ball ball2;  
+    inField(p, ball, ball2);
+    if(ball2 != errorBall) {
+      col = mix(ball.color, ball2.color, distance(ball.pos, ball2.pos));
+      break;
     }
+    
   }
   gl_FragColor = col;
 

@@ -62,8 +62,7 @@ $(document).ready(function() {
   var pos, radius, velocity;
 
 
-  
-  var balls = [];
+
   
 
   
@@ -77,7 +76,7 @@ $(document).ready(function() {
   
   var mouseBall = new Ball(new Vec2(0.5), 0.10, new Vec2(0.5), colors.BLACK);
   
-  console.log('balls:', balls);
+  console.log('balls:', _.pluck(balls, 'color'));
   
   
   $.ajax({
